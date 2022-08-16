@@ -7,7 +7,7 @@ resource "google_monitoring_notification_channel" "pagerduty" {
 }
 
 resource "google_monitoring_alert_policy" "alert_policy" {
-  for_each = var.alert_filters
+  for_each = var.alerts
 
   display_name = each.key
   combiner     = var.combiner
