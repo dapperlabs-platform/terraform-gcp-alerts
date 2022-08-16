@@ -2,12 +2,12 @@ resource "google_monitoring_notification_channel" "pagerduty" {
   display_name = "PagerDuty"
   type         = "pagerduty"
   sensitive_labels {
-    service_key = var.pd_service_key
+    service_key = var.pd_gcp_integration_key
   }
 }
 
 resource "google_monitoring_alert_policy" "alert_policy" {
-  for_each = var.alert_filters
+  for_each = var.alerts
 
   display_name = each.key
   combiner     = var.combiner
@@ -16,6 +16,13 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     google_monitoring_notification_channel.pagerduty.name
   ]
   enabled = var.enabled
+
+  alert_strategy {
+    notification_rate_limit {
+      period = var.notification_rate_limit
+    }
+  }
+
 
   // TODO: update module for handling other alert types
   conditions {

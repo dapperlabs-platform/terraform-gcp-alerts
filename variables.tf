@@ -1,9 +1,14 @@
-variable "pd_service_key" {
-  nullable = false
+variable "pd_gcp_integration_key" {
+  type        = string
+  description = "The Integration Key for the PagerDuty service you wish to alert."
 }
 
 variable "alerts" {
-  type = map(map())
+  type = map(object({
+    filter           = string
+    label_extractors = map(string)
+  }))
+  description = "A map object representing all the alerts you wish to create. NOTE: For label_extractors, each value in the key,value pair must be wrapped in the following: EXTRACT() or REGEXP_EXTRACT(). Documentation on format here: https://cloud.google.com/logging/docs/reference/v2/rest/v2/projects.metrics#LogMetric.FIELDS.value_extractor "
 }
 
 variable "project" {
@@ -20,5 +25,10 @@ variable "combiner" {
 variable "enabled" {
   type        = bool
   description = "If set to true, the alert is enabled. If set to false, it is disabled"
-  default     = true
+}
+
+variable "notification_rate_limit" {
+  type = string
+  description = "Alerts of the same type will not cause another notification if it occurs within this time period (must be set in seconds, minimum is 300). Ex: if this is set to '300s' then if two alerts of the same kind are triggered within 5 minutes, only one alert notification will get sent."
+  default = "300s"
 }

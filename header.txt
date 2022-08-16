@@ -1,0 +1,41 @@
+# GCP Alerts
+
+## What does this do?
+
+This creates log based alerts in GCP. You can create a log based filter to alert when a certain log condition is met and have it communicate to a PagerDuty alert channel.
+
+## How to provision this module?
+
+To create the module it is required to set values for the following variables:
+    * alerts
+    * project
+    * enabled
+    * pd_service_key
+
+### Example of How to Set up the Module
+```hcl
+module "alerts" {
+  source = "github.com/dapperlabs-platform/terraform-gcp-alerts?ref=[VERSION]"
+
+  alerts         = local.alerts           // This is a local variable that defines the alerts
+  project        = var.project            // The name of the GCP project where these alerts will be provisioned
+  enabled        = false                  // This is recommended when initializing an alert as it will not trigger a real PagerDuty event.
+  pd_service_key = var.pd_service_key     // The Integration Key for the PagerDuty service you wish to alert
+}
+```
+
+### Example of Alert definition
+```hcl
+locals {
+  alerts = {
+    // Someone tries to destroy a key
+    "Key Deleted" = {
+      "filter" = "protoPayload.authorizationInfo.permission=\"cloudkms.cryptoKeyVersions.destroy\""
+      "label_extractors" = {
+        "Email"       = "protoPayload.authenticationInfo.principalEmail"
+        "Key_Version" = "protoPayload.resourceName"
+      }
+    }
+  }
+}
+```
