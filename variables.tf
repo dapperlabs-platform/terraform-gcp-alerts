@@ -1,9 +1,16 @@
 variable "pd_service_key" {
-  nullable = false
+  type        = string
+  nullable    = false
+  description = "The Integration Key for the PagerDuty service you wish to alert."
 }
 
 variable "alerts" {
-  type = map(map())
+  type = map(object({
+    filter           = string
+    label_extractors = map(string)
+  }))
+  nullable    = false
+  description = "A map object representing all the alerts you wish to create."
 }
 
 variable "project" {
@@ -20,5 +27,5 @@ variable "combiner" {
 variable "enabled" {
   type        = bool
   description = "If set to true, the alert is enabled. If set to false, it is disabled"
-  default     = true
+  nullable    = false
 }
